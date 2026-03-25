@@ -140,6 +140,7 @@ const Index = () => {
                 }}
               >
                 <div
+                  ref={canvasContainerRef}
                   className="shadow-lg"
                   style={{
                     width: preset.width,
@@ -147,12 +148,7 @@ const Index = () => {
                     transform: `scale(${scale})`,
                     transformOrigin: "top center",
                   }}
-                >
-                  <canvas
-                    ref={canvasElRef}
-                    style={{ display: "block" }}
-                  />
-                </div>
+                />
               </div>
               <div
                 className="mt-3"
