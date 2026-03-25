@@ -138,7 +138,7 @@ const Index = () => {
           className="flex-1 flex items-center justify-center min-w-0 overflow-hidden"
           style={{ backgroundColor: "#F5F5F5" }}
         >
-          {scale > 0 && (
+          {fitScale > 0 && (
             <div className="flex flex-col items-center">
               <div
                 className="shadow-lg bg-white"
