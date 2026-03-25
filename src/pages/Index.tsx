@@ -10,7 +10,7 @@ const Index = () => {
   const [gridEnabled, setGridEnabled] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState(0);
   const canvasAreaRef = useRef<HTMLDivElement>(null);
-  const canvasElRef = useRef<HTMLCanvasElement>(null);
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
   const fabricRef = useRef<FabricCanvas | null>(null);
   const [areaSize, setAreaSize] = useState({ width: 0, height: 0 });
 
