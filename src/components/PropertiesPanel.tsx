@@ -79,6 +79,9 @@ export default function PropertiesPanel({ selectedObject, onPropertyChange, tick
   const [hexInput, setHexInput] = useState("#000000");
 
   const isText = selectedObject instanceof Textbox;
+  const isShape = selectedObject instanceof Rect || selectedObject instanceof Circle;
+  const isLine = selectedObject instanceof Line;
+  const isImage = selectedObject instanceof FabricImage;
 
   const sync = useCallback(() => {
     if (!selectedObject) return;
