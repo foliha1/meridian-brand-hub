@@ -13,6 +13,7 @@ const Index = () => {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const fabricRef = useRef<FabricCanvas | null>(null);
   const [areaSize, setAreaSize] = useState({ width: 0, height: 0 });
+  const [zoom, setZoom] = useState<number | null>(null);
 
   const { display, body } = brandConfig.typography;
   const { primary, secondary } = brandConfig.colors;
@@ -30,12 +31,18 @@ const Index = () => {
 
   const padding = 48;
   const dimLabelHeight = 24;
-  const scale = areaSize.width && areaSize.height
+  const fitScale = areaSize.width && areaSize.height
     ? Math.min(
         (areaSize.width - padding * 2) / preset.width,
         (areaSize.height - padding * 2 - dimLabelHeight) / preset.height
       )
     : 0;
+  const scale = zoom ?? fitScale;
+
+  // Reset zoom to fit when preset changes
+  useEffect(() => {
+    setZoom(null);
+  }, [selectedPreset]);
 
   // Initialize / reinitialize Fabric canvas on preset change
   useEffect(() => {
@@ -131,7 +138,7 @@ const Index = () => {
           className="flex-1 flex items-center justify-center min-w-0 overflow-hidden"
           style={{ backgroundColor: "#F5F5F5" }}
         >
-          {scale > 0 && (
+          {fitScale > 0 && (
             <div className="flex flex-col items-center">
               <div
                 className="shadow-lg bg-white"
@@ -175,9 +182,9 @@ const Index = () => {
           {preset.name}
         </span>
         <div className="flex items-center justify-center gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7"><Minus className="h-3.5 w-3.5" /></Button>
-          <span style={{ fontFamily: body.family, fontWeight: 500, fontSize: "12px" }}>100%</span>
-          <Button variant="ghost" size="icon" className="h-7 w-7"><Plus className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom(Math.max(0.25, (zoom ?? fitScale) - 0.1))}><Minus className="h-3.5 w-3.5" /></Button>
+          <span style={{ fontFamily: body.family, fontWeight: 500, fontSize: "12px" }}>{Math.round(scale * 100)}%</span>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom(Math.min(2, (zoom ?? fitScale) + 0.1))}><Plus className="h-3.5 w-3.5" /></Button>
         </div>
         <div className="flex items-center justify-end gap-2">
           <span style={{ fontFamily: body.family, fontWeight: 400, fontSize: "12px" }}>Grid</span>
