@@ -179,6 +179,67 @@ const Index = () => {
     fc.renderAll();
   }, [primary.hex, preset.width, preset.height]);
 
+  const addImage = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const fc = fabricRef.current;
+    const file = e.target.files?.[0];
+    if (!fc || !file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const imgEl = document.createElement("img");
+      imgEl.onload = () => {
+        const fabricImg = new FabricImage(imgEl);
+        const maxW = 400;
+        if (fabricImg.width! > maxW) {
+          fabricImg.scaleToWidth(maxW);
+        }
+        fabricImg.set({
+          left: preset.width / 2 - (fabricImg.getScaledWidth() / 2),
+          top: preset.height / 2 - (fabricImg.getScaledHeight() / 2),
+        });
+        fc.add(fabricImg);
+        fc.setActiveObject(fabricImg);
+        fc.renderAll();
+      };
+      imgEl.src = evt.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }, [preset.width, preset.height]);
+
+  const addLine = useCallback(() => {
+    const fc = fabricRef.current;
+    if (!fc) return;
+    const dark = brandConfig.colors.dark;
+    const line = new Line([0, 0, 200, 0], {
+      stroke: dark.hex,
+      strokeWidth: 2,
+      left: preset.width / 2 - 100,
+      top: preset.height / 2,
+    });
+    fc.add(line);
+    fc.setActiveObject(line);
+    fc.renderAll();
+  }, [preset.width, preset.height]);
+
+  const applyBrandColor = useCallback((hex: string) => {
+    const fc = fabricRef.current;
+    if (!fc) return;
+    const obj = fc.getActiveObject();
+    if (!obj) return;
+    if (obj instanceof Textbox) {
+      obj.set("fill", hex);
+    } else if (obj instanceof Line) {
+      obj.set("stroke", hex);
+    } else {
+      obj.set("fill", hex);
+    }
+    fc.renderAll();
+  }, []);
+
   const sectionLabelStyle = {
     fontFamily: body.family,
     fontWeight: 500,
