@@ -25,6 +25,8 @@ const Index = () => {
   const [zoom, setZoom] = useState<number | null>(null);
   const [layers, setLayers] = useState<LayerItem[]>([]);
   const [selectedObjId, setSelectedObjId] = useState<number | null>(null);
+  const [selectedObj, setSelectedObj] = useState<FabricObject | null>(null);
+  const [propsTick, setPropsTick] = useState(0);
 
   const refreshLayers = useCallback(() => {
     const fc = fabricRef.current;
