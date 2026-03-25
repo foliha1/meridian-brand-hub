@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Canvas as FabricCanvas, Line, Textbox, Rect, Circle } from "fabric";
-import { brandConfig } from "@/config/brandConfig";
+import { Canvas as FabricCanvas, Line, Textbox, Rect, Circle, FabricImage } from "fabric";
+import { brandConfig, brandColorArray } from "@/config/brandConfig";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Minus, Plus, Type, Square } from "lucide-react";
+import { Minus, Plus, Type, Square, Image as ImageIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
