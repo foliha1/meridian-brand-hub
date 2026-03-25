@@ -474,10 +474,8 @@ const Index = () => {
                 <div
                   ref={canvasContainerRef}
                   style={{
-                    width: preset.width,
-                    height: preset.height,
-                    transform: `scale(${scale})`,
-                    transformOrigin: "top left",
+                    width: preset.width * scale,
+                    height: preset.height * scale,
                   }}
                 />
               </div>
