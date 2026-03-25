@@ -97,7 +97,21 @@ const Index = () => {
       refreshLayers();
     });
     fc.on("object:removed", refreshLayers);
-    fc.on("object:modified", refreshLayers);
+    fc.on("object:modified", (e) => {
+      const obj = e.target;
+      if (obj instanceof Rect && (obj.scaleX !== 1 || obj.scaleY !== 1)) {
+        const newWidth = obj.width * (obj.scaleX ?? 1);
+        const newHeight = obj.height * (obj.scaleY ?? 1);
+        obj.set({
+          width: newWidth,
+          height: newHeight,
+          scaleX: 1,
+          scaleY: 1,
+        });
+        obj.setCoords();
+      }
+      refreshLayers();
+    });
     fc.on("selection:created", (e) => {
       const obj = e.selected?.[0] ?? null;
       setSelectedObjId((obj as any)?.__uid ?? null);

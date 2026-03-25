@@ -37,8 +37,6 @@ export const brandConfig: BrandConfig = {
     { name: "LinkedIn Post", width: 1200, height: 627 },
     { name: "Twitter/X Post", width: 1600, height: 900 },
     { name: "Facebook Cover", width: 1640, height: 924 },
-    { name: "Print A4", width: 2480, height: 3508 },
-    { name: "Print A3", width: 3508, height: 4961 },
     { name: "Presentation 16:9", width: 1920, height: 1080 },
   ],
 };
