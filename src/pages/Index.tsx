@@ -137,6 +137,7 @@ const Index = () => {
                 style={{
                   width: preset.width * scale,
                   height: preset.height * scale,
+                  overflow: "hidden",
                 }}
               >
                 <div
@@ -146,7 +147,7 @@ const Index = () => {
                     width: preset.width,
                     height: preset.height,
                     transform: `scale(${scale})`,
-                    transformOrigin: "top center",
+                    transformOrigin: "top left",
                   }}
                 />
               </div>
