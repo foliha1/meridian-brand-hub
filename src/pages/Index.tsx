@@ -466,9 +466,12 @@ const Index = () => {
         {/* RIGHT PANEL */}
         <div className="w-72 border-l bg-white overflow-y-auto p-4 shrink-0">
           <div style={sectionLabelStyle}>Properties</div>
-          <div className="text-center" style={{ fontFamily: body.family, fontWeight: 400, fontSize: "13px", color: "#9CA3AF" }}>
-            Select an element
-          </div>
+          <PropertiesPanel
+            selectedObject={selectedObj}
+            onPropertyChange={() => setPropsTick((t) => t + 1)}
+            key={selectedObjId ?? "none"}
+            tick={propsTick}
+          />
         </div>
       </div>
 
