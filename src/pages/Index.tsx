@@ -126,16 +126,16 @@ const Index = () => {
       </div>
 
       {/* BOTTOM BAR */}
-      <div className="h-10 border-t bg-white px-4 flex items-center justify-between shrink-0">
+      <div className="h-10 border-t bg-white px-4 grid grid-cols-3 items-center shrink-0">
         <span style={{ fontFamily: body.family, fontWeight: 400, fontSize: "12px", color: "#6B7280" }}>
           {preset.name}
         </span>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-center gap-1">
           <Button variant="ghost" size="icon" className="h-7 w-7"><Minus className="h-3.5 w-3.5" /></Button>
           <span style={{ fontFamily: body.family, fontWeight: 500, fontSize: "12px" }}>100%</span>
           <Button variant="ghost" size="icon" className="h-7 w-7"><Plus className="h-3.5 w-3.5" /></Button>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-end gap-2">
           <span style={{ fontFamily: body.family, fontWeight: 400, fontSize: "12px" }}>Grid</span>
           <Switch checked={gridEnabled} onCheckedChange={setGridEnabled} />
         </div>
