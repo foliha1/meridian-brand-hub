@@ -18,6 +18,7 @@ const Index = () => {
   const canvasAreaRef = useRef<HTMLDivElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const fabricRef = useRef<FabricCanvas | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [areaSize, setAreaSize] = useState({ width: 0, height: 0 });
   const [zoom, setZoom] = useState<number | null>(null);
 
