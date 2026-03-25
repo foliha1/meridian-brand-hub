@@ -22,6 +22,20 @@ const Index = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [areaSize, setAreaSize] = useState({ width: 0, height: 0 });
   const [zoom, setZoom] = useState<number | null>(null);
+  const [layers, setLayers] = useState<LayerItem[]>([]);
+  const [selectedObjId, setSelectedObjId] = useState<number | null>(null);
+
+  const refreshLayers = useCallback(() => {
+    const fc = fabricRef.current;
+    if (!fc) { setLayers([]); return; }
+    const items: LayerItem[] = [];
+    fc.getObjects().forEach((obj) => {
+      const info = getLayerInfo(obj);
+      if (info) items.push(info);
+    });
+    items.reverse(); // top z-order first
+    setLayers(items);
+  }, []);
 
   const { display, body } = brandConfig.typography;
   const { primary, secondary } = brandConfig.colors;
