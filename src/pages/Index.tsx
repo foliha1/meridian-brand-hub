@@ -297,6 +297,7 @@ const Index = () => {
     const line = new Line([0, 0, 200, 0], {
       stroke: dark.hex,
       strokeWidth: 2,
+      strokeUniform: true,
       left: preset.width / 2 - 100,
       top: preset.height / 2,
     });
