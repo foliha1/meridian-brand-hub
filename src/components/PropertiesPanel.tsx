@@ -63,12 +63,6 @@ export default function PropertiesPanel({ selectedObject, onPropertyChange, tick
     sync();
   }, [sync, tick]);
 
-  // Expose sync so parent can call it on fabric events
-  useEffect(() => {
-    if (!selectedObject) return;
-    (selectedObject as any).__propsSync = sync;
-    return () => { (selectedObject as any).__propsSync = undefined; };
-  }, [selectedObject, sync]);
 
   if (!selectedObject) {
     return (
