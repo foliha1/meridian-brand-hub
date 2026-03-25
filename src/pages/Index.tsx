@@ -1,9 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Canvas as FabricCanvas, Line } from "fabric";
+import { Canvas as FabricCanvas, Line, Textbox, Rect, Circle } from "fabric";
 import { brandConfig } from "@/config/brandConfig";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Type, Square } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Index = () => {
   const [projectName, setProjectName] = useState("");
@@ -17,6 +23,7 @@ const Index = () => {
 
   const { display, body } = brandConfig.typography;
   const { primary, secondary } = brandConfig.colors;
+  const accent = brandConfig.colors.accent;
   const preset = brandConfig.canvasPresets[selectedPreset];
 
   useEffect(() => {
@@ -39,24 +46,20 @@ const Index = () => {
     : 0;
   const scale = zoom ?? fitScale;
 
-  // Reset zoom to fit when preset changes
   useEffect(() => {
     setZoom(null);
   }, [selectedPreset]);
 
-  // Initialize / reinitialize Fabric canvas on preset change
   useEffect(() => {
     const container = canvasContainerRef.current;
     if (!container) return;
 
-    // Clean up previous
     if (fabricRef.current) {
       fabricRef.current.dispose();
       fabricRef.current = null;
     }
     container.innerHTML = "";
 
-    // Create canvas element imperatively so React doesn't manage it
     const canvasEl = document.createElement("canvas");
     container.appendChild(canvasEl);
 
@@ -114,6 +117,67 @@ const Index = () => {
     }
   }, [gridEnabled, selectedPreset, preset.width, preset.height, addGrid, removeGrid]);
 
+  // --- Toolbar actions ---
+  const addText = useCallback(() => {
+    const fc = fabricRef.current;
+    if (!fc) return;
+    const text = new Textbox("Heading", {
+      fontFamily: display.family,
+      fontSize: 48,
+      fontWeight: "700",
+      fill: primary.hex,
+      left: preset.width / 2 - 100,
+      top: preset.height / 2 - 30,
+      width: 200,
+    });
+    fc.add(text);
+    fc.setActiveObject(text);
+    fc.renderAll();
+  }, [display.family, primary.hex, preset.width, preset.height]);
+
+  const addRect = useCallback(() => {
+    const fc = fabricRef.current;
+    if (!fc) return;
+    const rect = new Rect({
+      width: 200, height: 200,
+      fill: secondary.hex,
+      left: preset.width / 2 - 100,
+      top: preset.height / 2 - 100,
+    });
+    fc.add(rect);
+    fc.setActiveObject(rect);
+    fc.renderAll();
+  }, [secondary.hex, preset.width, preset.height]);
+
+  const addCircle = useCallback(() => {
+    const fc = fabricRef.current;
+    if (!fc) return;
+    const circle = new Circle({
+      radius: 100,
+      fill: accent.hex,
+      left: preset.width / 2 - 100,
+      top: preset.height / 2 - 100,
+    });
+    fc.add(circle);
+    fc.setActiveObject(circle);
+    fc.renderAll();
+  }, [accent.hex, preset.width, preset.height]);
+
+  const addRoundedRect = useCallback(() => {
+    const fc = fabricRef.current;
+    if (!fc) return;
+    const rect = new Rect({
+      width: 200, height: 120,
+      fill: primary.hex,
+      rx: 16, ry: 16,
+      left: preset.width / 2 - 100,
+      top: preset.height / 2 - 60,
+    });
+    fc.add(rect);
+    fc.setActiveObject(rect);
+    fc.renderAll();
+  }, [primary.hex, preset.width, preset.height]);
+
   const sectionLabelStyle = {
     fontFamily: body.family,
     fontWeight: 500,
@@ -140,6 +204,28 @@ const Index = () => {
           style={{ fontFamily: body.family, fontWeight: 500, fontSize: "14px" }}
         />
         <Button variant="outline" size="sm">Export</Button>
+      </div>
+
+      {/* TOOLBAR */}
+      <div className="h-12 bg-white border-b flex items-center gap-2 px-4 shrink-0">
+        <Button variant="ghost" size="sm" className="gap-1.5" onClick={addText}>
+          <Type className="h-4 w-4" />
+          Text
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="gap-1.5">
+              <Square className="h-4 w-4" />
+              Shape
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={addRect}>Rectangle</DropdownMenuItem>
+            <DropdownMenuItem onClick={addCircle}>Circle</DropdownMenuItem>
+            <DropdownMenuItem onClick={addRoundedRect}>Rounded Rect</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* MIDDLE */}
