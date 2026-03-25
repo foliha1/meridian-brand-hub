@@ -387,31 +387,23 @@ export default function PropertiesPanel({ selectedObject, onPropertyChange, tick
 
           {/* Color */}
           <div style={sectionLabel} className="mb-2">Color</div>
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            {brandColorArray.map((c) => (
-              <button
-                key={c.key}
-                onClick={() => handleColorCircle(c.hex)}
-                className="w-5 h-5 rounded-full cursor-pointer transition-transform duration-150 hover:scale-110 shrink-0"
-                style={{
-                  backgroundColor: c.hex,
-                  boxShadow: fillColor.toLowerCase() === c.hex.toLowerCase()
-                    ? `0 0 0 2px white, 0 0 0 4px ${c.hex}`
-                    : "none",
-                }}
-                title={c.name}
-              />
-            ))}
-          </div>
-          <input
-            type="text"
-            value={hexInput}
-            onChange={(e) => handleHexInput(e.target.value)}
-            placeholder="#000000"
-            maxLength={7}
-            style={inputStyle}
-          />
+          <ColorPicker value={fillColor} onChange={handleColorCircle} />
         </>
+      )}
+
+      {/* Shape-specific sections */}
+      {isShape && (
+        <ShapeProperties selectedObject={selectedObject} onPropertyChange={onPropertyChange} tick={tick} />
+      )}
+
+      {/* Line-specific sections */}
+      {isLine && (
+        <LineProperties selectedObject={selectedObject} onPropertyChange={onPropertyChange} tick={tick} />
+      )}
+
+      {/* Image-specific sections */}
+      {isImage && (
+        <ImageProperties selectedObject={selectedObject} onPropertyChange={onPropertyChange} />
       )}
     </div>
   );
