@@ -58,7 +58,7 @@ const Index = () => {
       fc.dispose();
       fabricRef.current = null;
     };
-  }, [selectedPreset, scale > 0]); // reinit when preset changes or first valid scale
+  }, [selectedPreset, preset.width, preset.height]);
 
   const sectionLabelStyle = {
     fontFamily: body.family,
