@@ -219,6 +219,7 @@ const Index = () => {
     const rect = new Rect({
       width: 200, height: 200,
       fill: secondary.hex,
+      strokeUniform: true,
       left: preset.width / 2 - 100,
       top: preset.height / 2 - 100,
     });
