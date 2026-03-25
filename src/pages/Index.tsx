@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Canvas as FabricCanvas, Line, Textbox, Rect, Circle, FabricImage } from "fabric";
+import { Canvas as FabricCanvas, Line, Textbox, Rect, Circle, FabricImage, FabricObject } from "fabric";
 import { brandConfig, brandColorArray } from "@/config/brandConfig";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Minus, Plus, Type, Square, Image as ImageIcon } from "lucide-react";
+import LayerPanel, { getLayerInfo, type LayerItem } from "@/components/LayerPanel";
 import {
   DropdownMenu,
   DropdownMenuContent,
