@@ -99,14 +99,19 @@ export default function ShapeProperties({ selectedObject, onPropertyChange, tick
       <ColorPicker value={strokeColor} onChange={handleStroke} />
       <div className="mt-2">
         <span style={{ fontFamily: body.family, fontSize: "11px", color: "#9CA3AF" }}>Width</span>
-        <input
-          type="number"
-          value={strokeWidth}
-          min={0}
-          max={20}
-          onChange={(e) => handleStrokeWidth(e.target.value)}
-          style={inputStyle}
-        />
+        <div className="flex items-center gap-3 mt-1">
+          <div className="flex-1">
+            <Slider value={[strokeWidth]} min={0} max={20} step={1} onValueChange={(v) => handleStrokeWidth(String(v[0]))} />
+          </div>
+          <input
+            type="number"
+            value={strokeWidth}
+            min={0}
+            max={20}
+            onChange={(e) => handleStrokeWidth(e.target.value)}
+            style={{ ...inputStyle, width: "50px", textAlign: "center" }}
+          />
+        </div>
       </div>
 
       {/* Corner Radius — Rect only */}
