@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Canvas as FabricCanvas, Line, Textbox, Rect, Circle, FabricImage, FabricObject } from "fabric";
 import { brandConfig, brandColorArray } from "@/config/brandConfig";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Minus, Plus, Type, Square, Image as ImageIcon } from "lucide-react";
 import LayerPanel, { getLayerInfo, type LayerItem } from "@/components/LayerPanel";
+import PropertiesPanel from "@/components/PropertiesPanel";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +25,8 @@ const Index = () => {
   const [zoom, setZoom] = useState<number | null>(null);
   const [layers, setLayers] = useState<LayerItem[]>([]);
   const [selectedObjId, setSelectedObjId] = useState<number | null>(null);
+  const [selectedObj, setSelectedObj] = useState<FabricObject | null>(null);
+  const [propsTick, setPropsTick] = useState(0);
 
   const refreshLayers = useCallback(() => {
     const fc = fabricRef.current;
@@ -96,13 +99,25 @@ const Index = () => {
     fc.on("object:removed", refreshLayers);
     fc.on("object:modified", refreshLayers);
     fc.on("selection:created", (e) => {
-      setSelectedObjId((e.selected?.[0] as any)?.__uid ?? null);
+      const obj = e.selected?.[0] ?? null;
+      setSelectedObjId((obj as any)?.__uid ?? null);
+      setSelectedObj(obj ?? null);
     });
     fc.on("selection:updated", (e) => {
-      setSelectedObjId((e.selected?.[0] as any)?.__uid ?? null);
+      const obj = e.selected?.[0] ?? null;
+      setSelectedObjId((obj as any)?.__uid ?? null);
+      setSelectedObj(obj ?? null);
     });
-    fc.on("selection:cleared", () => setSelectedObjId(null));
+    fc.on("selection:cleared", () => {
+      setSelectedObjId(null);
+      setSelectedObj(null);
+    });
     fc.on("text:changed", refreshLayers);
+
+    const syncProps = () => setPropsTick((t) => t + 1);
+    fc.on("object:moving", syncProps);
+    fc.on("object:scaling", syncProps);
+    fc.on("object:rotating", syncProps);
 
     return () => {
       fc.dispose();
@@ -451,9 +466,12 @@ const Index = () => {
         {/* RIGHT PANEL */}
         <div className="w-72 border-l bg-white overflow-y-auto p-4 shrink-0">
           <div style={sectionLabelStyle}>Properties</div>
-          <div className="text-center" style={{ fontFamily: body.family, fontWeight: 400, fontSize: "13px", color: "#9CA3AF" }}>
-            Select an element
-          </div>
+          <PropertiesPanel
+            selectedObject={selectedObj}
+            onPropertyChange={() => setPropsTick((t) => t + 1)}
+            key={selectedObjId ?? "none"}
+            tick={propsTick}
+          />
         </div>
       </div>
 
