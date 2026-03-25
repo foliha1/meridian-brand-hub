@@ -31,12 +31,18 @@ const Index = () => {
 
   const padding = 48;
   const dimLabelHeight = 24;
-  const scale = areaSize.width && areaSize.height
+  const fitScale = areaSize.width && areaSize.height
     ? Math.min(
         (areaSize.width - padding * 2) / preset.width,
         (areaSize.height - padding * 2 - dimLabelHeight) / preset.height
       )
     : 0;
+  const scale = zoom ?? fitScale;
+
+  // Reset zoom to fit when preset changes
+  useEffect(() => {
+    setZoom(null);
+  }, [selectedPreset]);
 
   // Initialize / reinitialize Fabric canvas on preset change
   useEffect(() => {
