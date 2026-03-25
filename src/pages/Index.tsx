@@ -13,6 +13,7 @@ const Index = () => {
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const fabricRef = useRef<FabricCanvas | null>(null);
   const [areaSize, setAreaSize] = useState({ width: 0, height: 0 });
+  const [zoom, setZoom] = useState<number | null>(null);
 
   const { display, body } = brandConfig.typography;
   const { primary, secondary } = brandConfig.colors;
