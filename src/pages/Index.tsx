@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Canvas as FabricCanvas, Line, Textbox, Rect, Circle } from "fabric";
-import { brandConfig } from "@/config/brandConfig";
+import { Canvas as FabricCanvas, Line, Textbox, Rect, Circle, FabricImage } from "fabric";
+import { brandConfig, brandColorArray } from "@/config/brandConfig";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Minus, Plus, Type, Square } from "lucide-react";
+import { Minus, Plus, Type, Square, Image as ImageIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +18,7 @@ const Index = () => {
   const canvasAreaRef = useRef<HTMLDivElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const fabricRef = useRef<FabricCanvas | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [areaSize, setAreaSize] = useState({ width: 0, height: 0 });
   const [zoom, setZoom] = useState<number | null>(null);
 
@@ -178,6 +179,67 @@ const Index = () => {
     fc.renderAll();
   }, [primary.hex, preset.width, preset.height]);
 
+  const addImage = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const fc = fabricRef.current;
+    const file = e.target.files?.[0];
+    if (!fc || !file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const imgEl = document.createElement("img");
+      imgEl.onload = () => {
+        const fabricImg = new FabricImage(imgEl);
+        const maxW = 400;
+        if (fabricImg.width! > maxW) {
+          fabricImg.scaleToWidth(maxW);
+        }
+        fabricImg.set({
+          left: preset.width / 2 - (fabricImg.getScaledWidth() / 2),
+          top: preset.height / 2 - (fabricImg.getScaledHeight() / 2),
+        });
+        fc.add(fabricImg);
+        fc.setActiveObject(fabricImg);
+        fc.renderAll();
+      };
+      imgEl.src = evt.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }, [preset.width, preset.height]);
+
+  const addLine = useCallback(() => {
+    const fc = fabricRef.current;
+    if (!fc) return;
+    const dark = brandConfig.colors.dark;
+    const line = new Line([0, 0, 200, 0], {
+      stroke: dark.hex,
+      strokeWidth: 2,
+      left: preset.width / 2 - 100,
+      top: preset.height / 2,
+    });
+    fc.add(line);
+    fc.setActiveObject(line);
+    fc.renderAll();
+  }, [preset.width, preset.height]);
+
+  const applyBrandColor = useCallback((hex: string) => {
+    const fc = fabricRef.current;
+    if (!fc) return;
+    const obj = fc.getActiveObject();
+    if (!obj) return;
+    if (obj instanceof Textbox) {
+      obj.set("fill", hex);
+    } else if (obj instanceof Line) {
+      obj.set("stroke", hex);
+    } else {
+      obj.set("fill", hex);
+    }
+    fc.renderAll();
+  }, []);
+
   const sectionLabelStyle = {
     fontFamily: body.family,
     fontWeight: 500,
@@ -226,6 +288,35 @@ const Index = () => {
             <DropdownMenuItem onClick={addRoundedRect}>Rounded Rect</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Button variant="ghost" size="sm" className="gap-1.5" onClick={addImage}>
+          <ImageIcon className="h-4 w-4" />
+          Image
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleImageUpload}
+        />
+
+        <Button variant="ghost" size="sm" className="gap-1.5" onClick={addLine}>
+          <Minus className="h-4 w-4" />
+          Line
+        </Button>
+
+        <div className="h-6 w-px bg-gray-200" />
+
+        {brandColorArray.map((c) => (
+          <button
+            key={c.key}
+            onClick={() => applyBrandColor(c.hex)}
+            className="w-6 h-6 rounded-full border border-gray-200 cursor-pointer transition-transform duration-150 hover:scale-110 shrink-0"
+            style={{ backgroundColor: c.hex }}
+            title={c.name}
+          />
+        ))}
       </div>
 
       {/* MIDDLE */}
