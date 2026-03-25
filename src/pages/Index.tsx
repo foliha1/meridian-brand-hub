@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Canvas as FabricCanvas, Line, Textbox, Rect, Circle, FabricImage } from "fabric";
+import { Canvas as FabricCanvas, Line, Textbox, Rect, Circle, FabricImage, FabricObject } from "fabric";
 import { brandConfig, brandColorArray } from "@/config/brandConfig";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Minus, Plus, Type, Square, Image as ImageIcon } from "lucide-react";
+import LayerPanel, { getLayerInfo, type LayerItem } from "@/components/LayerPanel";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +22,20 @@ const Index = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [areaSize, setAreaSize] = useState({ width: 0, height: 0 });
   const [zoom, setZoom] = useState<number | null>(null);
+  const [layers, setLayers] = useState<LayerItem[]>([]);
+  const [selectedObjId, setSelectedObjId] = useState<number | null>(null);
+
+  const refreshLayers = useCallback(() => {
+    const fc = fabricRef.current;
+    if (!fc) { setLayers([]); return; }
+    const items: LayerItem[] = [];
+    fc.getObjects().forEach((obj) => {
+      const info = getLayerInfo(obj);
+      if (info) items.push(info);
+    });
+    items.reverse(); // top z-order first
+    setLayers(items);
+  }, []);
 
   const { display, body } = brandConfig.typography;
   const { primary, secondary } = brandConfig.colors;
@@ -71,12 +86,30 @@ const Index = () => {
     });
     fabricRef.current = fc;
 
+    let uidCounter = 0;
+    fc.on("object:added", (e) => {
+      if (!(e.target as any).isGridLine && !(e.target as any).__uid) {
+        (e.target as any).__uid = ++uidCounter;
+      }
+      refreshLayers();
+    });
+    fc.on("object:removed", refreshLayers);
+    fc.on("object:modified", refreshLayers);
+    fc.on("selection:created", (e) => {
+      setSelectedObjId((e.selected?.[0] as any)?.__uid ?? null);
+    });
+    fc.on("selection:updated", (e) => {
+      setSelectedObjId((e.selected?.[0] as any)?.__uid ?? null);
+    });
+    fc.on("selection:cleared", () => setSelectedObjId(null));
+    fc.on("text:changed", refreshLayers);
+
     return () => {
       fc.dispose();
       fabricRef.current = null;
       if (container) container.innerHTML = "";
     };
-  }, [selectedPreset, preset.width, preset.height]);
+  }, [selectedPreset, preset.width, preset.height, refreshLayers]);
 
   const addGrid = useCallback((fc: FabricCanvas, w: number, h: number) => {
     const gutter = brandConfig.grid.gutter;
@@ -344,9 +377,40 @@ const Index = () => {
           </div>
           <div className="border-t my-4" />
           <div style={sectionLabelStyle}>Layers</div>
-          <div className="text-center" style={{ fontFamily: body.family, fontWeight: 400, fontSize: "13px", color: "#9CA3AF" }}>
-            No layers yet
-          </div>
+          <LayerPanel
+            layers={layers}
+            selectedId={selectedObjId}
+            onSelect={(obj) => {
+              const fc = fabricRef.current;
+              if (!fc) return;
+              fc.setActiveObject(obj);
+              fc.renderAll();
+            }}
+            onToggleVisibility={(obj) => {
+              const fc = fabricRef.current;
+              if (!fc) return;
+              obj.set("visible", !obj.visible);
+              fc.discardActiveObject();
+              fc.renderAll();
+              refreshLayers();
+            }}
+            onReorder={(fromIdx, toIdx) => {
+              const fc = fabricRef.current;
+              if (!fc) return;
+              // layers are in reverse z-order, so convert
+              const objs = fc.getObjects().filter((o: any) => !o.isGridLine);
+              const fromZ = objs.length - 1 - fromIdx;
+              const toZ = objs.length - 1 - toIdx;
+              const obj = objs[fromZ];
+              if (!obj) return;
+              // Move to absolute z position
+              const allObjs = fc.getObjects();
+              const gridCount = allObjs.filter((o: any) => o.isGridLine).length;
+              fc.moveObjectTo(obj, toZ + gridCount);
+              fc.renderAll();
+              refreshLayers();
+            }}
+          />
         </div>
 
         {/* CENTER CANVAS AREA */}
