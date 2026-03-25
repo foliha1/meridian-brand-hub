@@ -69,6 +69,8 @@ export default function PropertiesPanel({ selectedObject, onPropertyChange, tick
   const [opacity, setOpacity] = useState(100);
   const [lockRatio, setLockRatio] = useState(false);
   const [aspect, setAspect] = useState(1);
+  const [originX, setOriginX] = useState<"left" | "center" | "right">("left");
+  const [originY, setOriginY] = useState<"top" | "center" | "bottom">("top");
 
   // Text-specific state
   const [fontFamily, setFontFamily] = useState(display.family);
