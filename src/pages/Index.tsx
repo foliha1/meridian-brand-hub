@@ -37,17 +37,23 @@ const Index = () => {
       )
     : 0;
 
-  // Initialize / reinitialize Fabric canvas on preset or size change
+  // Initialize / reinitialize Fabric canvas on preset change
   useEffect(() => {
-    if (!canvasElRef.current || scale <= 0) return;
+    const container = canvasContainerRef.current;
+    if (!container) return;
 
-    // Dispose previous instance
+    // Clean up previous
     if (fabricRef.current) {
       fabricRef.current.dispose();
       fabricRef.current = null;
     }
+    container.innerHTML = "";
 
-    const fc = new FabricCanvas(canvasElRef.current, {
+    // Create canvas element imperatively so React doesn't manage it
+    const canvasEl = document.createElement("canvas");
+    container.appendChild(canvasEl);
+
+    const fc = new FabricCanvas(canvasEl, {
       width: preset.width,
       height: preset.height,
       backgroundColor: "#FFFFFF",
@@ -57,6 +63,7 @@ const Index = () => {
     return () => {
       fc.dispose();
       fabricRef.current = null;
+      if (container) container.innerHTML = "";
     };
   }, [selectedPreset, preset.width, preset.height]);
 
