@@ -234,6 +234,7 @@ const Index = () => {
     const circle = new Circle({
       radius: 100,
       fill: accent.hex,
+      strokeUniform: true,
       left: preset.width / 2 - 100,
       top: preset.height / 2 - 100,
     });
