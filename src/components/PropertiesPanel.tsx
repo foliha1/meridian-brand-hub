@@ -389,6 +389,31 @@ export default function PropertiesPanel({ selectedObject, onPropertyChange, tick
               </SelectContent>
             </Select>
 
+            {/* Text Size Presets */}
+            <div className="flex gap-1 flex-wrap">
+              {[
+                { label: "H1", size: parseInt(display.sizes.xl) },
+                { label: "H2", size: parseInt(display.sizes.lg) },
+                { label: "H3", size: parseInt(display.sizes.md) },
+                { label: "Body", size: parseInt(body.sizes.md) },
+                { label: "Caption", size: parseInt(body.sizes.xs) },
+              ].map(({ label, size }) => (
+                <button
+                  key={label}
+                  onClick={() => handleFontSize(size)}
+                  className="rounded-md px-2 py-1 text-xs border transition-colors"
+                  style={{
+                    fontFamily: body.family,
+                    backgroundColor: fontSize === size ? `${brandConfig.colors.secondary.hex}1A` : "transparent",
+                    borderColor: fontSize === size ? brandConfig.colors.secondary.hex : "#E5E7EB",
+                    color: fontSize === size ? brandConfig.colors.secondary.hex : "#6B7280",
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
             {/* Font Size */}
             <div className="flex items-center gap-1">
               <button
