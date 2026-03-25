@@ -74,6 +74,46 @@ const Index = () => {
     };
   }, [selectedPreset, preset.width, preset.height]);
 
+  const addGrid = useCallback((fc: FabricCanvas, w: number, h: number) => {
+    const gutter = brandConfig.grid.gutter;
+    const lines: Line[] = [];
+    for (let x = gutter; x < w; x += gutter) {
+      const line = new Line([x, 0, x, h], {
+        stroke: "#E5E7EB", strokeWidth: 0.5,
+        selectable: false, evented: false, excludeFromExport: true,
+      });
+      (line as any).isGridLine = true;
+      lines.push(line);
+    }
+    for (let y = gutter; y < h; y += gutter) {
+      const line = new Line([0, y, w, y], {
+        stroke: "#E5E7EB", strokeWidth: 0.5,
+        selectable: false, evented: false, excludeFromExport: true,
+      });
+      (line as any).isGridLine = true;
+      lines.push(line);
+    }
+    lines.forEach((l) => fc.add(l));
+    lines.forEach((l) => fc.sendObjectToBack(l));
+    fc.renderAll();
+  }, []);
+
+  const removeGrid = useCallback((fc: FabricCanvas) => {
+    const gridLines = fc.getObjects().filter((o: any) => o.isGridLine);
+    gridLines.forEach((l) => fc.remove(l));
+    fc.renderAll();
+  }, []);
+
+  useEffect(() => {
+    const fc = fabricRef.current;
+    if (!fc) return;
+    if (gridEnabled) {
+      addGrid(fc, preset.width, preset.height);
+    } else {
+      removeGrid(fc);
+    }
+  }, [gridEnabled, selectedPreset, preset.width, preset.height, addGrid, removeGrid]);
+
   const sectionLabelStyle = {
     fontFamily: body.family,
     fontWeight: 500,
