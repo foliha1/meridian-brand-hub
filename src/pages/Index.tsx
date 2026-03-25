@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { Canvas as FabricCanvas } from "fabric";
 import { brandConfig } from "@/config/brandConfig";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -9,6 +10,8 @@ const Index = () => {
   const [gridEnabled, setGridEnabled] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState(0);
   const canvasAreaRef = useRef<HTMLDivElement>(null);
+  const canvasElRef = useRef<HTMLCanvasElement>(null);
+  const fabricRef = useRef<FabricCanvas | null>(null);
   const [areaSize, setAreaSize] = useState({ width: 0, height: 0 });
 
   const { display, body } = brandConfig.typography;
@@ -33,8 +36,29 @@ const Index = () => {
         (areaSize.height - padding * 2 - dimLabelHeight) / preset.height
       )
     : 0;
-  const displayW = preset.width * scale;
-  const displayH = preset.height * scale;
+
+  // Initialize / reinitialize Fabric canvas on preset or size change
+  useEffect(() => {
+    if (!canvasElRef.current || scale <= 0) return;
+
+    // Dispose previous instance
+    if (fabricRef.current) {
+      fabricRef.current.dispose();
+      fabricRef.current = null;
+    }
+
+    const fc = new FabricCanvas(canvasElRef.current, {
+      width: preset.width,
+      height: preset.height,
+      backgroundColor: "#FFFFFF",
+    });
+    fabricRef.current = fc;
+
+    return () => {
+      fc.dispose();
+      fabricRef.current = null;
+    };
+  }, [selectedPreset, preset.width, preset.height]);
 
   const sectionLabelStyle = {
     fontFamily: body.family,
@@ -97,15 +121,25 @@ const Index = () => {
         {/* CENTER CANVAS AREA */}
         <div
           ref={canvasAreaRef}
-          className="flex-1 flex flex-col items-center justify-center min-w-0"
+          className="flex-1 flex flex-col items-center justify-center min-w-0 overflow-hidden"
           style={{ backgroundColor: "#F5F5F5" }}
         >
           {scale > 0 && (
             <>
               <div
-                className="bg-white shadow-lg"
-                style={{ width: displayW, height: displayH }}
-              />
+                className="shadow-lg"
+                style={{
+                  transform: `scale(${scale})`,
+                  transformOrigin: "center center",
+                  width: preset.width,
+                  height: preset.height,
+                }}
+              >
+                <canvas
+                  ref={canvasElRef}
+                  style={{ display: "block" }}
+                />
+              </div>
               <div
                 className="mt-2"
                 style={{ fontFamily: body.family, fontWeight: 400, fontSize: "11px", color: "#9CA3AF" }}
