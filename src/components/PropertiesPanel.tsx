@@ -33,6 +33,7 @@ function round(v: number) {
 interface Props {
   selectedObject: FabricObject | null;
   onPropertyChange: () => void;
+  tick?: number;
 }
 
 export default function PropertiesPanel({ selectedObject, onPropertyChange }: Props) {
