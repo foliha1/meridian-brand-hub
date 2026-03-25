@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { FabricObject, Rect } from "fabric";
 import { brandConfig } from "@/config/brandConfig";
 import ColorPicker from "./ColorPicker";
+import { Slider } from "@/components/ui/slider";
 
 const { body } = brandConfig.typography;
 
