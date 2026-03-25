@@ -377,9 +377,40 @@ const Index = () => {
           </div>
           <div className="border-t my-4" />
           <div style={sectionLabelStyle}>Layers</div>
-          <div className="text-center" style={{ fontFamily: body.family, fontWeight: 400, fontSize: "13px", color: "#9CA3AF" }}>
-            No layers yet
-          </div>
+          <LayerPanel
+            layers={layers}
+            selectedId={selectedObjId}
+            onSelect={(obj) => {
+              const fc = fabricRef.current;
+              if (!fc) return;
+              fc.setActiveObject(obj);
+              fc.renderAll();
+            }}
+            onToggleVisibility={(obj) => {
+              const fc = fabricRef.current;
+              if (!fc) return;
+              obj.set("visible", !obj.visible);
+              fc.discardActiveObject();
+              fc.renderAll();
+              refreshLayers();
+            }}
+            onReorder={(fromIdx, toIdx) => {
+              const fc = fabricRef.current;
+              if (!fc) return;
+              // layers are in reverse z-order, so convert
+              const objs = fc.getObjects().filter((o: any) => !o.isGridLine);
+              const fromZ = objs.length - 1 - fromIdx;
+              const toZ = objs.length - 1 - toIdx;
+              const obj = objs[fromZ];
+              if (!obj) return;
+              // Move to absolute z position
+              const allObjs = fc.getObjects();
+              const gridCount = allObjs.filter((o: any) => o.isGridLine).length;
+              fc.moveObjectTo(obj, toZ + gridCount);
+              fc.renderAll();
+              refreshLayers();
+            }}
+          />
         </div>
 
         {/* CENTER CANVAS AREA */}
