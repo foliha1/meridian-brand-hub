@@ -434,8 +434,7 @@ const Index = () => {
           className="flex-1 flex items-center justify-center min-w-0 overflow-hidden"
           style={{ backgroundColor: "#F5F5F5" }}
         >
-          {fitScale > 0 && (
-            <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center" style={{ visibility: fitScale > 0 ? 'visible' : 'hidden' }}>
               <div
                 className="shadow-lg bg-white"
                 style={{
@@ -460,7 +459,6 @@ const Index = () => {
                 {preset.width} × {preset.height} px
               </div>
             </div>
-          )}
         </div>
 
         {/* RIGHT PANEL */}
