@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { FabricObject, Textbox, Rect, Circle, Line, FabricImage } from "fabric";
+import { FabricObject, Textbox, Rect, Circle, Line, FabricImage, Point } from "fabric";
 import ShapeProperties from "@/components/properties/ShapeProperties";
 import LineProperties from "@/components/properties/LineProperties";
 import ImageProperties from "@/components/properties/ImageProperties";
@@ -69,6 +69,8 @@ export default function PropertiesPanel({ selectedObject, onPropertyChange, tick
   const [opacity, setOpacity] = useState(100);
   const [lockRatio, setLockRatio] = useState(false);
   const [aspect, setAspect] = useState(1);
+  const [originX, setOriginX] = useState<"left" | "center" | "right">("left");
+  const [originY, setOriginY] = useState<"top" | "center" | "bottom">("top");
 
   // Text-specific state
   const [fontFamily, setFontFamily] = useState(display.family);
@@ -91,6 +93,8 @@ export default function PropertiesPanel({ selectedObject, onPropertyChange, tick
     setH(round(selectedObject.getScaledHeight()));
     setRot(round(selectedObject.angle ?? 0));
     setOpacity(round((selectedObject.opacity ?? 1) * 100));
+    setOriginX((selectedObject.originX as "left" | "center" | "right") ?? "left");
+    setOriginY((selectedObject.originY as "top" | "center" | "bottom") ?? "top");
     const sw = selectedObject.getScaledWidth();
     const sh = selectedObject.getScaledHeight();
     if (sh > 0) setAspect(sw / sh);
@@ -260,6 +264,48 @@ export default function PropertiesPanel({ selectedObject, onPropertyChange, tick
           <span style={{ fontFamily: body.family, fontSize: "11px", color: "#9CA3AF" }}>Y</span>
           <input type="number" value={y} onChange={(e) => handleY(e.target.value)} style={inputStyle} />
         </label>
+      </div>
+
+      {/* Origin Point Grid */}
+      <div className="mt-2">
+        <span style={{ fontFamily: body.family, fontSize: "11px", color: "#9CA3AF" }}>Origin</span>
+        <div className="grid grid-cols-3 gap-0.5 w-fit mt-1">
+          {(["top", "center", "bottom"] as const).map((oy) =>
+            (["left", "center", "right"] as const).map((ox) => (
+              <button
+                key={`${ox}-${oy}`}
+                onClick={() => {
+                  const oldOrigin = new Point(
+                    selectedObject.originX === "left" ? 0 : selectedObject.originX === "center" ? 0.5 : 1,
+                    selectedObject.originY === "top" ? 0 : selectedObject.originY === "center" ? 0.5 : 1
+                  );
+                  const newOrigin = new Point(
+                    ox === "left" ? 0 : ox === "center" ? 0.5 : 1,
+                    oy === "top" ? 0 : oy === "center" ? 0.5 : 1
+                  );
+                  const position = selectedObject.getRelativeXY();
+                  const w = selectedObject.getScaledWidth();
+                  const h = selectedObject.getScaledHeight();
+                  const newLeft = position.x + (oldOrigin.x - newOrigin.x) * w;
+                  const newTop = position.y + (oldOrigin.y - newOrigin.y) * h;
+                  selectedObject.set({ originX: ox, originY: oy, left: newLeft, top: newTop });
+                  setOriginX(ox);
+                  setOriginY(oy);
+                  setX(round(newLeft));
+                  setY(round(newTop));
+                  applyAndRender();
+                }}
+                className="rounded-sm border transition-colors"
+                style={{
+                  width: 20,
+                  height: 20,
+                  backgroundColor: originX === ox && originY === oy ? brandConfig.colors.secondary.hex : "transparent",
+                  borderColor: originX === ox && originY === oy ? brandConfig.colors.secondary.hex : "#E5E7EB",
+                }}
+              />
+            ))
+          )}
+        </div>
       </div>
 
       <div className="border-t my-3" />
