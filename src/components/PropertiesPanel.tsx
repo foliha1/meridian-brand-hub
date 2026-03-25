@@ -36,7 +36,7 @@ interface Props {
   tick?: number;
 }
 
-export default function PropertiesPanel({ selectedObject, onPropertyChange }: Props) {
+export default function PropertiesPanel({ selectedObject, onPropertyChange, tick }: Props) {
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
   const [w, setW] = useState(0);
