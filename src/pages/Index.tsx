@@ -99,13 +99,25 @@ const Index = () => {
     fc.on("object:removed", refreshLayers);
     fc.on("object:modified", refreshLayers);
     fc.on("selection:created", (e) => {
-      setSelectedObjId((e.selected?.[0] as any)?.__uid ?? null);
+      const obj = e.selected?.[0] ?? null;
+      setSelectedObjId((obj as any)?.__uid ?? null);
+      setSelectedObj(obj ?? null);
     });
     fc.on("selection:updated", (e) => {
-      setSelectedObjId((e.selected?.[0] as any)?.__uid ?? null);
+      const obj = e.selected?.[0] ?? null;
+      setSelectedObjId((obj as any)?.__uid ?? null);
+      setSelectedObj(obj ?? null);
     });
-    fc.on("selection:cleared", () => setSelectedObjId(null));
+    fc.on("selection:cleared", () => {
+      setSelectedObjId(null);
+      setSelectedObj(null);
+    });
     fc.on("text:changed", refreshLayers);
+
+    const syncProps = () => setPropsTick((t) => t + 1);
+    fc.on("object:moving", syncProps);
+    fc.on("object:scaling", syncProps);
+    fc.on("object:rotating", syncProps);
 
     return () => {
       fc.dispose();
