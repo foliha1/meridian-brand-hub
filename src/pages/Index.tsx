@@ -250,6 +250,7 @@ const Index = () => {
       width: 200, height: 120,
       fill: primary.hex,
       rx: 16, ry: 16,
+      strokeUniform: true,
       left: preset.width / 2 - 100,
       top: preset.height / 2 - 60,
     });
