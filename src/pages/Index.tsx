@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Minus, Plus, Type, Square, Image as ImageIcon } from "lucide-react";
 import LayerPanel, { getLayerInfo, type LayerItem } from "@/components/LayerPanel";
+import PropertiesPanel from "@/components/PropertiesPanel";
 import {
   DropdownMenu,
   DropdownMenuContent,
