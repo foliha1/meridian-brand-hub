@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { FabricObject, Textbox, Rect, Circle, Line, FabricImage, Point } from "fabric";
+import { FabricObject, Textbox, Rect, Circle, Line, FabricImage } from "fabric";
 import ShapeProperties from "@/components/properties/ShapeProperties";
 import LineProperties from "@/components/properties/LineProperties";
 import ImageProperties from "@/components/properties/ImageProperties";
@@ -275,20 +275,15 @@ export default function PropertiesPanel({ selectedObject, onPropertyChange, tick
               <button
                 key={`${ox}-${oy}`}
                 onClick={() => {
-                  const oldOrigin = new Point(
-                    selectedObject.originX === "left" ? 0 : selectedObject.originX === "center" ? 0.5 : 1,
-                    selectedObject.originY === "top" ? 0 : selectedObject.originY === "center" ? 0.5 : 1
-                  );
-                  const newOrigin = new Point(
-                    ox === "left" ? 0 : ox === "center" ? 0.5 : 1,
-                    oy === "top" ? 0 : oy === "center" ? 0.5 : 1
-                  );
-                  const position = selectedObject.getRelativeXY();
-                  const w = selectedObject.getScaledWidth();
-                  const h = selectedObject.getScaledHeight();
-                  const newLeft = position.x + (oldOrigin.x - newOrigin.x) * w;
-                  const newTop = position.y + (oldOrigin.y - newOrigin.y) * h;
+                  const center = selectedObject.getCenterPoint();
+                  const sw = selectedObject.getScaledWidth();
+                  const sh = selectedObject.getScaledHeight();
+                  const originOffsetX = ox === "left" ? -sw / 2 : ox === "center" ? 0 : sw / 2;
+                  const originOffsetY = oy === "top" ? -sh / 2 : oy === "center" ? 0 : sh / 2;
+                  const newLeft = center.x + originOffsetX;
+                  const newTop = center.y + originOffsetY;
                   selectedObject.set({ originX: ox, originY: oy, left: newLeft, top: newTop });
+                  selectedObject.setCoords();
                   setOriginX(ox);
                   setOriginY(oy);
                   setX(round(newLeft));
