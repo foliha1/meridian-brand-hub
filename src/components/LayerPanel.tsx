@@ -80,7 +80,7 @@ export default function LayerPanel({ layers, selectedId, onSelect, onToggleVisib
 
         return (
           <div
-            key={idx}
+            key={(layer.obj as any).__uid ?? idx}
             draggable
             onDragStart={() => handleDragStart(idx)}
             onDragOver={handleDragOver}
