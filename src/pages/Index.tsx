@@ -36,8 +36,29 @@ const Index = () => {
         (areaSize.height - padding * 2 - dimLabelHeight) / preset.height
       )
     : 0;
-  const displayW = preset.width * scale;
-  const displayH = preset.height * scale;
+
+  // Initialize / reinitialize Fabric canvas on preset or size change
+  useEffect(() => {
+    if (!canvasElRef.current || scale <= 0) return;
+
+    // Dispose previous instance
+    if (fabricRef.current) {
+      fabricRef.current.dispose();
+      fabricRef.current = null;
+    }
+
+    const fc = new FabricCanvas(canvasElRef.current, {
+      width: preset.width,
+      height: preset.height,
+      backgroundColor: "#FFFFFF",
+    });
+    fabricRef.current = fc;
+
+    return () => {
+      fc.dispose();
+      fabricRef.current = null;
+    };
+  }, [selectedPreset, scale > 0]); // reinit when preset changes or first valid scale
 
   const sectionLabelStyle = {
     fontFamily: body.family,
