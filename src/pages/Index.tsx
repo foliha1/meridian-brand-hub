@@ -109,7 +109,7 @@ const Index = () => {
       fabricRef.current = null;
       if (container) container.innerHTML = "";
     };
-  }, [selectedPreset, preset.width, preset.height]);
+  }, [selectedPreset, preset.width, preset.height, refreshLayers]);
 
   const addGrid = useCallback((fc: FabricCanvas, w: number, h: number) => {
     const gutter = brandConfig.grid.gutter;
