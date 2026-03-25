@@ -86,6 +86,24 @@ const Index = () => {
     });
     fabricRef.current = fc;
 
+    let uidCounter = 0;
+    fc.on("object:added", (e) => {
+      if (!(e.target as any).isGridLine && !(e.target as any).__uid) {
+        (e.target as any).__uid = ++uidCounter;
+      }
+      refreshLayers();
+    });
+    fc.on("object:removed", refreshLayers);
+    fc.on("object:modified", refreshLayers);
+    fc.on("selection:created", (e) => {
+      setSelectedObjId((e.selected?.[0] as any)?.__uid ?? null);
+    });
+    fc.on("selection:updated", (e) => {
+      setSelectedObjId((e.selected?.[0] as any)?.__uid ?? null);
+    });
+    fc.on("selection:cleared", () => setSelectedObjId(null));
+    fc.on("text:changed", refreshLayers);
+
     return () => {
       fc.dispose();
       fabricRef.current = null;
