@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Canvas as FabricCanvas } from "fabric";
 import { brandConfig } from "@/config/brandConfig";
 import { Button } from "@/components/ui/button";
