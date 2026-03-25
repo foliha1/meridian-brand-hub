@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Canvas as FabricCanvas, Line, Textbox, Rect, Circle, FabricImage, FabricObject } from "fabric";
 import { brandConfig, brandColorArray } from "@/config/brandConfig";
 import { Button } from "@/components/ui/button";
