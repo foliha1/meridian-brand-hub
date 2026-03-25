@@ -134,15 +134,14 @@ const Index = () => {
           {scale > 0 && (
             <div className="flex flex-col items-center">
               <div
+                className="shadow-lg bg-white"
                 style={{
                   width: preset.width * scale,
                   height: preset.height * scale,
-                  overflow: "hidden",
                 }}
               >
                 <div
                   ref={canvasContainerRef}
-                  className="shadow-lg"
                   style={{
                     width: preset.width,
                     height: preset.height,
