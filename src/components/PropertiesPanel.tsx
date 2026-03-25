@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { FabricObject, Textbox } from "fabric";
+import { FabricObject, Textbox, Rect, Circle, Line, FabricImage } from "fabric";
+import ShapeProperties from "@/components/properties/ShapeProperties";
+import LineProperties from "@/components/properties/LineProperties";
+import ImageProperties from "@/components/properties/ImageProperties";
+import ColorPicker from "@/components/properties/ColorPicker";
 import { brandConfig, brandColorArray } from "@/config/brandConfig";
 import { Link, Unlink, Minus, Plus, AlignLeft, AlignCenter, AlignRight, AlignJustify } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
@@ -75,6 +79,9 @@ export default function PropertiesPanel({ selectedObject, onPropertyChange, tick
   const [hexInput, setHexInput] = useState("#000000");
 
   const isText = selectedObject instanceof Textbox;
+  const isShape = selectedObject instanceof Rect || selectedObject instanceof Circle;
+  const isLine = selectedObject instanceof Line;
+  const isImage = selectedObject instanceof FabricImage;
 
   const sync = useCallback(() => {
     if (!selectedObject) return;
@@ -380,31 +387,23 @@ export default function PropertiesPanel({ selectedObject, onPropertyChange, tick
 
           {/* Color */}
           <div style={sectionLabel} className="mb-2">Color</div>
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            {brandColorArray.map((c) => (
-              <button
-                key={c.key}
-                onClick={() => handleColorCircle(c.hex)}
-                className="w-5 h-5 rounded-full cursor-pointer transition-transform duration-150 hover:scale-110 shrink-0"
-                style={{
-                  backgroundColor: c.hex,
-                  boxShadow: fillColor.toLowerCase() === c.hex.toLowerCase()
-                    ? `0 0 0 2px white, 0 0 0 4px ${c.hex}`
-                    : "none",
-                }}
-                title={c.name}
-              />
-            ))}
-          </div>
-          <input
-            type="text"
-            value={hexInput}
-            onChange={(e) => handleHexInput(e.target.value)}
-            placeholder="#000000"
-            maxLength={7}
-            style={inputStyle}
-          />
+          <ColorPicker value={fillColor} onChange={handleColorCircle} />
         </>
+      )}
+
+      {/* Shape-specific sections */}
+      {isShape && (
+        <ShapeProperties selectedObject={selectedObject} onPropertyChange={onPropertyChange} tick={tick} />
+      )}
+
+      {/* Line-specific sections */}
+      {isLine && (
+        <LineProperties selectedObject={selectedObject} onPropertyChange={onPropertyChange} tick={tick} />
+      )}
+
+      {/* Image-specific sections */}
+      {isImage && (
+        <ImageProperties selectedObject={selectedObject} onPropertyChange={onPropertyChange} />
       )}
     </div>
   );
