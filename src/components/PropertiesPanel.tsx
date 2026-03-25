@@ -93,6 +93,8 @@ export default function PropertiesPanel({ selectedObject, onPropertyChange, tick
     setH(round(selectedObject.getScaledHeight()));
     setRot(round(selectedObject.angle ?? 0));
     setOpacity(round((selectedObject.opacity ?? 1) * 100));
+    setOriginX((selectedObject.originX as "left" | "center" | "right") ?? "left");
+    setOriginY((selectedObject.originY as "top" | "center" | "bottom") ?? "top");
     const sw = selectedObject.getScaledWidth();
     const sh = selectedObject.getScaledHeight();
     if (sh > 0) setAspect(sw / sh);
