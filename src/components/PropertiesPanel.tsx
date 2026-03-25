@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { FabricObject, Textbox, Rect, Circle, Line, FabricImage } from "fabric";
+import { FabricObject, Textbox, Rect, Circle, Line, FabricImage, Point } from "fabric";
 import ShapeProperties from "@/components/properties/ShapeProperties";
 import LineProperties from "@/components/properties/LineProperties";
 import ImageProperties from "@/components/properties/ImageProperties";
