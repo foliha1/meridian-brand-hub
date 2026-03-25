@@ -121,32 +121,39 @@ const Index = () => {
         {/* CENTER CANVAS AREA */}
         <div
           ref={canvasAreaRef}
-          className="flex-1 flex flex-col items-center justify-center min-w-0 overflow-hidden"
+          className="flex-1 flex items-center justify-center min-w-0 overflow-hidden"
           style={{ backgroundColor: "#F5F5F5" }}
         >
           {scale > 0 && (
-            <>
+            <div className="flex flex-col items-center">
               <div
-                className="shadow-lg"
                 style={{
-                  transform: `scale(${scale})`,
-                  transformOrigin: "center center",
-                  width: preset.width,
-                  height: preset.height,
+                  width: preset.width * scale,
+                  height: preset.height * scale,
                 }}
               >
-                <canvas
-                  ref={canvasElRef}
-                  style={{ display: "block" }}
-                />
+                <div
+                  className="shadow-lg"
+                  style={{
+                    width: preset.width,
+                    height: preset.height,
+                    transform: `scale(${scale})`,
+                    transformOrigin: "top center",
+                  }}
+                >
+                  <canvas
+                    ref={canvasElRef}
+                    style={{ display: "block" }}
+                  />
+                </div>
               </div>
               <div
-                className="mt-2"
+                className="mt-3"
                 style={{ fontFamily: body.family, fontWeight: 400, fontSize: "11px", color: "#9CA3AF" }}
               >
                 {preset.width} × {preset.height} px
               </div>
-            </>
+            </div>
           )}
         </div>
 
