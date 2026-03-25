@@ -126,6 +126,35 @@ const Index = () => {
     };
   }, [selectedPreset, preset.width, preset.height, refreshLayers]);
 
+  // Apply Fabric zoom whenever scale changes
+  useEffect(() => {
+    const fc = fabricRef.current;
+    if (!fc || scale <= 0) return;
+    fc.setZoom(scale);
+    fc.setDimensions(
+      { width: preset.width * scale, height: preset.height * scale },
+      { cssOnly: true }
+    );
+  }, [scale, preset.width, preset.height]);
+
+  /** Temporarily reset zoom to 1:1 for export, then restore. */
+  const withExportScale = useCallback((exportFn: (fc: FabricCanvas) => void) => {
+    const fc = fabricRef.current;
+    if (!fc) return;
+    const currentScale = fc.getZoom();
+    fc.setZoom(1);
+    fc.setDimensions({ width: preset.width, height: preset.height }, { cssOnly: true });
+    try {
+      exportFn(fc);
+    } finally {
+      fc.setZoom(currentScale);
+      fc.setDimensions(
+        { width: preset.width * currentScale, height: preset.height * currentScale },
+        { cssOnly: true }
+      );
+    }
+  }, [preset.width, preset.height]);
+
   const addGrid = useCallback((fc: FabricCanvas, w: number, h: number) => {
     const gutter = brandConfig.grid.gutter;
     const lines: Line[] = [];
