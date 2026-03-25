@@ -182,9 +182,9 @@ const Index = () => {
           {preset.name}
         </span>
         <div className="flex items-center justify-center gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7"><Minus className="h-3.5 w-3.5" /></Button>
-          <span style={{ fontFamily: body.family, fontWeight: 500, fontSize: "12px" }}>100%</span>
-          <Button variant="ghost" size="icon" className="h-7 w-7"><Plus className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom(Math.max(0.25, (zoom ?? fitScale) - 0.1))}><Minus className="h-3.5 w-3.5" /></Button>
+          <span style={{ fontFamily: body.family, fontWeight: 500, fontSize: "12px" }}>{Math.round(scale * 100)}%</span>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom(Math.min(2, (zoom ?? fitScale) + 0.1))}><Plus className="h-3.5 w-3.5" /></Button>
         </div>
         <div className="flex items-center justify-end gap-2">
           <span style={{ fontFamily: body.family, fontWeight: 400, fontSize: "12px" }}>Grid</span>
