@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { brandConfig } from "@/config/brandConfig";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -8,9 +8,33 @@ const Index = () => {
   const [projectName, setProjectName] = useState("");
   const [gridEnabled, setGridEnabled] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState(0);
+  const canvasAreaRef = useRef<HTMLDivElement>(null);
+  const [areaSize, setAreaSize] = useState({ width: 0, height: 0 });
 
   const { display, body } = brandConfig.typography;
   const { primary, secondary } = brandConfig.colors;
+  const preset = brandConfig.canvasPresets[selectedPreset];
+
+  useEffect(() => {
+    const el = canvasAreaRef.current;
+    if (!el) return;
+    const obs = new ResizeObserver(([entry]) => {
+      setAreaSize({ width: entry.contentRect.width, height: entry.contentRect.height });
+    });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const padding = 48;
+  const dimLabelHeight = 24;
+  const scale = areaSize.width && areaSize.height
+    ? Math.min(
+        (areaSize.width - padding * 2) / preset.width,
+        (areaSize.height - padding * 2 - dimLabelHeight) / preset.height
+      )
+    : 0;
+  const displayW = preset.width * scale;
+  const displayH = preset.height * scale;
 
   const sectionLabelStyle = {
     fontFamily: body.family,
@@ -23,7 +47,7 @@ const Index = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       {/* TOP BAR */}
       <div className="h-14 border-b bg-white flex items-center justify-between px-4 shrink-0">
         <span style={{ fontFamily: display.family, fontWeight: 700, fontSize: "16px", color: primary.hex }}>
@@ -40,15 +64,15 @@ const Index = () => {
         <Button variant="outline" size="sm">Export</Button>
       </div>
 
-      {/* MIDDLE AREA */}
+      {/* MIDDLE */}
       <div className="flex flex-1 min-h-0">
         {/* LEFT PANEL */}
         <div className="w-72 border-r bg-white overflow-y-auto p-4 shrink-0">
           <div style={sectionLabelStyle}>Canvas Size</div>
           <div className="grid grid-cols-2 gap-2">
-            {brandConfig.canvasPresets.map((preset, i) => (
+            {brandConfig.canvasPresets.map((p, i) => (
               <div
-                key={preset.name}
+                key={p.name}
                 onClick={() => setSelectedPreset(i)}
                 className="rounded-lg p-3 cursor-pointer transition-colors"
                 style={{
@@ -56,32 +80,55 @@ const Index = () => {
                   backgroundColor: i === selectedPreset ? `${secondary.hex}0D` : "transparent",
                 }}
               >
-                <div style={{ fontFamily: body.family, fontWeight: 500, fontSize: "12px" }}>
-                  {preset.name}
-                </div>
+                <div style={{ fontFamily: body.family, fontWeight: 500, fontSize: "12px" }}>{p.name}</div>
                 <div style={{ fontFamily: body.family, fontWeight: 400, fontSize: "11px", color: "#9CA3AF" }}>
-                  {preset.width} × {preset.height}
+                  {p.width} × {p.height}
                 </div>
               </div>
             ))}
           </div>
-
           <div className="border-t my-4" />
-
           <div style={sectionLabelStyle}>Layers</div>
           <div className="text-center" style={{ fontFamily: body.family, fontWeight: 400, fontSize: "13px", color: "#9CA3AF" }}>
             No layers yet
           </div>
         </div>
 
-        {/* CANVAS AREA */}
-        <div className="flex-1" style={{ backgroundColor: "#F5F5F5" }} />
+        {/* CENTER CANVAS AREA */}
+        <div
+          ref={canvasAreaRef}
+          className="flex-1 flex flex-col items-center justify-center min-w-0"
+          style={{ backgroundColor: "#F5F5F5" }}
+        >
+          {scale > 0 && (
+            <>
+              <div
+                className="bg-white shadow-lg"
+                style={{ width: displayW, height: displayH }}
+              />
+              <div
+                className="mt-2"
+                style={{ fontFamily: body.family, fontWeight: 400, fontSize: "11px", color: "#9CA3AF" }}
+              >
+                {preset.width} × {preset.height} px
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* RIGHT PANEL */}
+        <div className="w-72 border-l bg-white overflow-y-auto p-4 shrink-0">
+          <div style={sectionLabelStyle}>Properties</div>
+          <div className="text-center" style={{ fontFamily: body.family, fontWeight: 400, fontSize: "13px", color: "#9CA3AF" }}>
+            Select an element
+          </div>
+        </div>
       </div>
 
       {/* BOTTOM BAR */}
       <div className="h-10 border-t bg-white px-4 flex items-center justify-between shrink-0">
         <span style={{ fontFamily: body.family, fontWeight: 400, fontSize: "12px", color: "#6B7280" }}>
-          {brandConfig.canvasPresets[selectedPreset].name}
+          {preset.name}
         </span>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" className="h-7 w-7"><Minus className="h-3.5 w-3.5" /></Button>
